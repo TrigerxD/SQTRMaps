@@ -1,0 +1,29 @@
+--django
+
+pip install pipenv
+
+pip install Django
+
+pip install djangorestframework
+
+pip install djangorestframework_simplejwt
+
+polecenia do uruchomienia serwera:
+
+baza danych:
+python manage.py migrate
+
+utworzenie super usera:
+python manage.py createsuperuser
+
+uruchomienie serwera:
+python manage.py runserver
+
+
+--react
+
+sudo apt-get install -y nodejs
+
+npm install react-leaflet
+
+npm install leaflet react react-dom
