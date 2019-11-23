@@ -1,21 +1,21 @@
 import React from 'react'
 import {Map, Marker, Popup, TileLayer} from 'react-leaflet'
 import Control from 'react-leaflet-control';
+import {Login} from "./Login";
 
-const aeiLat = 50.28868461815858
-const aeiLng = 18.67756247520447
+const aeiLat = 50.28868461815858;
+const aeiLng = 18.67756247520447;
 
 class App extends React.Component {
-    constructor() {
-        super()
+    constructor(props) {
+        super(props);
         this.state = {
             latitude: aeiLat,
             longitude: aeiLng,
-        }
-        this.getMyLocation = this.getMyLocation.bind(this)
+        };
+        this.getMyLocation = this.getMyLocation.bind(this);
         this.newMarkerPosition = this.newMarkerPosition.bind(this);
         this.sendLocalization = this.sendLocalization.bind(this);
-        this.login = this.login.bind(this);
     }
 
     componentDidMount() {
@@ -34,12 +34,8 @@ class App extends React.Component {
         console.log('Sending loc to server: ' + this.state.latitude + ' ' + this.state.longitude);
     }
 
-    login() {
-        console.log('Log in');
-    }
-
     getMyLocation() {
-        const location = window.navigator && window.navigator.geolocation
+        const location = window.navigator && window.navigator.geolocation;
         if (location) {
             location.getCurrentPosition((position) => {
                 this.setState({
@@ -54,8 +50,8 @@ class App extends React.Component {
     }
 
     render() {
-        const {latitude, longitude} = this.state
-        const geoLocation = [latitude, longitude]
+        const {latitude, longitude} = this.state;
+        const geoLocation = [latitude, longitude];
         return (
             <Map center={geoLocation} zoom={17} maxZoom={19} onClick={this.newMarkerPosition}>
                 <TileLayer
@@ -76,9 +72,7 @@ class App extends React.Component {
                 </Control>
 
                 <Control position="topright">
-                    <button onClick={this.login}>
-                        Zaloguj się
-                    </button>
+                    <Login/>
                 </Control>
 
                 <Marker position={geoLocation}>

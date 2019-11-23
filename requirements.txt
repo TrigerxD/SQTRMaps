@@ -29,3 +29,5 @@ npm install react-leaflet
 npm install leaflet react react-dom
 
 npm install react-leaflet-control
+
+npm install react-popupbox
