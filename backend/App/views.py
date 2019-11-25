@@ -8,8 +8,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import MarkerSerializer, CompanySerializer, UserSerializer
 from .models import Marker, Company
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, BasePermission, SAFE_METHODS, \
-    AllowAny
+from rest_framework.permissions import IsAuthenticated,  AllowAny
 from django.core import serializers
 import json
 from django.http import HttpResponse

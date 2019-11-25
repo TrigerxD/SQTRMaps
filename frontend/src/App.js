@@ -52,7 +52,7 @@ class App extends React.Component {
     }
 
     onLogged = (access_token, refresh_token) => {
-        this.setState({access_token: access_token, refresh_token: refresh_token})
+        this.setState({access_token: access_token, refresh_token: refresh_token});
     };
 
     render() {
