@@ -30,6 +30,9 @@ export class Login extends React.Component {
 
     clickedLoginButton() {
 
+        if (this.state.login_username === '' || this.state.login_username === '')
+            return;
+
         const username = this.state.login_username.value;
         const password = this.state.login_password.value;
 
@@ -60,10 +63,7 @@ export class Login extends React.Component {
                 return;
 
             login_context.setState({access_token: response_json.access, refresh_token: response_json.refresh});
-            alert(login_context.state.access_token);
-            alert(login_context.state.refresh_token);
-
-            login_context.logged()
+            login_context.logged(response_json.access, response_json.refresh)
         }
 
         fetch('http://127.0.0.1:8000/api/token/', {
@@ -78,9 +78,10 @@ export class Login extends React.Component {
             .then(json => tokenService(json, this))
             .catch(error => console.log(error));
 
+
     }
 
-    logged() {
+    logged(access_token, refresh_token) {
         alert('Zalogowano!');
         PopupboxManager.close({
             config: {
@@ -89,14 +90,21 @@ export class Login extends React.Component {
             }
         });
         this.setState({button_text: 'Wyloguj'});
+
+        this.props.onLogged(access_token, refresh_token);
+
     }
 
-    registered(){
+    registered() {
         alert('Zarejestrowano!');
         this.refactorToLoginPopup();
     }
 
     clickedRegistrationButton() {
+
+        if (this.state.registration_username === '' || this.state.registration_email === ''
+            || this.state.registration_password === '' || this.state.registration_repeated_password === '')
+            return;
 
         const username = this.state.registration_username.value;
         const email = this.state.registration_email.value;
@@ -128,7 +136,7 @@ export class Login extends React.Component {
             return;
         }
 
-        if(password !== repeated_password){
+        if (password !== repeated_password) {
             alert("Podane hasła są różne!");
             return;
         }
@@ -157,7 +165,7 @@ export class Login extends React.Component {
 
     }
 
-     getLoginForm() {
+    getLoginForm() {
         return (
             <form>
                 <div className="container">
@@ -166,7 +174,8 @@ export class Login extends React.Component {
                            onChange={evt => this.updateLoginUsername(evt)}/>
 
                     <label><b>Hasło</b></label>
-                    <input type="password" placeholder="Wprowadź hasło" onChange={evt => this.updateLoginPassword(evt)}/>
+                    <input type="password" placeholder="Wprowadź hasło"
+                           onChange={evt => this.updateLoginPassword(evt)}/>
 
                     <button className="big_green_button" type="button" onClick={this.clickedLoginButton}>Zaloguj się
                     </button>
@@ -183,16 +192,20 @@ export class Login extends React.Component {
             <form>
                 <div className="container">
                     <label><b>Nazwa użytkownika</b></label>
-                    <input type="text" placeholder="Wprowadź nazwa użytkownika" onChange={evt => this.updateRegistrationUsername(evt)}/>
+                    <input type="text" placeholder="Wprowadź nazwa użytkownika"
+                           onChange={evt => this.updateRegistrationUsername(evt)}/>
 
                     <label><b>E-mail</b></label>
-                    <input type="email" placeholder="Wprowadź E-mail" onChange={evt => this.updateRegistrationEmail(evt)}/>
+                    <input type="email" placeholder="Wprowadź E-mail"
+                           onChange={evt => this.updateRegistrationEmail(evt)}/>
 
                     <label><b>Hasło</b></label>
-                    <input type="password" placeholder="Wprowadź hasło" onChange={evt => this.updateRegistrationPassword(evt)}/>
+                    <input type="password" placeholder="Wprowadź hasło"
+                           onChange={evt => this.updateRegistrationPassword(evt)}/>
 
                     <label><b>Powtórz hasło</b></label>
-                    <input type="password" placeholder="Powtórz hasło" onChange={evt => this.updateRegistrationRepeatedPassword(evt)}/>
+                    <input type="password" placeholder="Powtórz hasło"
+                           onChange={evt => this.updateRegistrationRepeatedPassword(evt)}/>
 
                     <button className="big_green_button registration_popup_registration_button" type="button"
                             onClick={this.clickedRegistrationButton}>Zarejestruj się
@@ -236,7 +249,7 @@ export class Login extends React.Component {
         });
     }
 
-    updateRegistrationEmail(evt){
+    updateRegistrationEmail(evt) {
         this.setState({
             registration_email: evt.target
         });
@@ -261,10 +274,10 @@ export class Login extends React.Component {
     refactorToRegistrationPopup() {
         const content = this.getRegistrationForm();
 
-        if(this.state.login_username)
+        if (this.state.login_username)
             this.state.login_username.value = '';
 
-        if(this.state.login_password)
+        if (this.state.login_password)
             this.state.login_password.value = '';
 
         PopupboxManager.update({

@@ -12,6 +12,8 @@ class App extends React.Component {
         this.state = {
             latitude: aeiLat,
             longitude: aeiLng,
+            access_token: '',
+            refresh_token: ''
         };
         this.getMyLocation = this.getMyLocation.bind(this);
         this.newMarkerPosition = this.newMarkerPosition.bind(this);
@@ -49,6 +51,10 @@ class App extends React.Component {
 
     }
 
+    onLogged = (access_token, refresh_token) => {
+        this.setState({access_token: access_token, refresh_token: refresh_token})
+    };
+
     render() {
         const {latitude, longitude} = this.state;
         const geoLocation = [latitude, longitude];
@@ -72,7 +78,7 @@ class App extends React.Component {
                 </Control>
 
                 <Control position="topright">
-                    <Login/>
+                    <Login onLogged={this.onLogged}/>
                 </Control>
 
                 <Marker position={geoLocation}>
