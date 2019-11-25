@@ -8,6 +8,8 @@ pip install djangorestframework
 
 pip install djangorestframework_simplejwt
 
+pip install django-cors-headers
+
 polecenia do uruchomienia serwera:
 
 baza danych:

@@ -21,10 +21,12 @@ from rest_framework_simplejwt.views import (
 )
 
 from App import views
+from App.views import UserView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('marker/', views.MarkerViewAll.as_view(), name='marker'),
+    path('user/', UserView.as_view(), name='user'),
 ]

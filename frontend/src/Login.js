@@ -11,7 +11,10 @@ export class Login extends React.Component {
             button_text: 'Zaloguj',
             login_username: '',
             login_password: '',
-            login_repeated_password: '',
+            registration_username: '',
+            registration_password: '',
+            registration_repeated_password: '',
+            registration_email: '',
             access_token: '',
             refresh_token: ''
         };
@@ -27,17 +30,23 @@ export class Login extends React.Component {
 
     clickedLoginButton() {
 
-        if (this.state.login_username === "") {
-            alert("Wprowadź nazwe użytkownmika!");
+        const username = this.state.login_username.value;
+        const password = this.state.login_password.value;
+
+        this.state.login_username.value = '';
+        this.state.login_password.value = '';
+
+        if (username === "") {
+            alert("Wprowadź nazwę użytkownmika!");
             return;
         }
 
-        if (this.state.login_password === "") {
+        if (password === "") {
             alert("Wprowadź hasło!");
             return;
         }
 
-        function serviceResponse(response) {
+        function responseService(response) {
             if (response.ok) {
                 return response.json();
             } else if (response.status === 401) {
@@ -61,39 +70,91 @@ export class Login extends React.Component {
             method: 'post',
             headers: {Accept: 'application/json', 'Content-Type': 'application/json'},
             "body": JSON.stringify({
-                "username": this.state.login_username.value,
-                "password": this.state.login_password.value
+                "username": username,
+                "password": password
             })
         })
-            .then(serviceResponse)
-            .then(a => tokenService(a, this))
+            .then(responseService)
+            .then(json => tokenService(json, this))
             .catch(error => console.log(error));
 
-        this.state.login_username.value = '';
-        this.state.login_password.value = '';
-
-        PopupboxManager.close({
-            config: {
-                fadeOut: true,
-                fadeOutSpeed: 500
-            }
-        })
     }
 
     logged() {
         alert('Zalogowano!');
-        this.setState({button_text: 'Wyloguj'});
-    }
-
-    clickedRegistrationButton() {
-        alert("Zarejestrowano!");
-
         PopupboxManager.close({
             config: {
                 fadeOut: true,
                 fadeOutSpeed: 500
             }
+        });
+        this.setState({button_text: 'Wyloguj'});
+    }
+
+    registered(){
+        alert('Zarejestrowano!');
+        this.refactorToLoginPopup();
+    }
+
+    clickedRegistrationButton() {
+
+        const username = this.state.registration_username.value;
+        const email = this.state.registration_email.value;
+        const password = this.state.registration_password.value;
+        const repeated_password = this.state.registration_repeated_password.value;
+
+        this.state.registration_username.value = '';
+        this.state.registration_email.value = '';
+        this.state.registration_password.value = '';
+        this.state.registration_repeated_password.value = '';
+
+        if (username === '') {
+            alert("Wprowadź nazwę użytkownmika!");
+            return;
+        }
+
+        if (email === "") {
+            alert("Wprowadź e-mail!");
+            return;
+        }
+
+        if (password === '') {
+            alert("Wprowadź hasło!");
+            return;
+        }
+
+        if (repeated_password === "") {
+            alert("Powtórz wpisane hasło!");
+            return;
+        }
+
+        if(password !== repeated_password){
+            alert("Podane hasła są różne!");
+            return;
+        }
+
+        function responseService(response, login_context) {
+            if (response.status === 201) {
+                login_context.registered();
+                alert("Utworzono nowego użytkownika!")
+            } else if (response.status === 409) {
+                alert('Taki użytkownik już istnieje!');
+            } else
+                alert('Coś poszło nie tak');
+        }
+
+        fetch('http://127.0.0.1:8000/user/', {
+            method: 'post',
+            headers: {Accept: 'application/json', 'Content-Type': 'application/json'},
+            "body": JSON.stringify({
+                "username": username,
+                "password": password,
+                "email": email
+            })
         })
+            .then(response => responseService(response, this))
+            .catch(error => console.log(error));
+
     }
 
      getLoginForm() {
@@ -102,10 +163,10 @@ export class Login extends React.Component {
                 <div className="container">
                     <label><b>Nazwa użytkownika</b></label>
                     <input type="text" placeholder="Wprowadź nazwa użytkownika"
-                           onChange={evt => this.updateUsername(evt)}/>
+                           onChange={evt => this.updateLoginUsername(evt)}/>
 
                     <label><b>Hasło</b></label>
-                    <input type="password" placeholder="Wprowadź hasło" onChange={evt => this.updatePassword(evt)}/>
+                    <input type="password" placeholder="Wprowadź hasło" onChange={evt => this.updateLoginPassword(evt)}/>
 
                     <button className="big_green_button" type="button" onClick={this.clickedLoginButton}>Zaloguj się
                     </button>
@@ -122,13 +183,16 @@ export class Login extends React.Component {
             <form>
                 <div className="container">
                     <label><b>Nazwa użytkownika</b></label>
-                    <input type="text" placeholder="Wprowadź nazwa użytkownika" onChange={evt => this.updateUsername(evt)}/>
+                    <input type="text" placeholder="Wprowadź nazwa użytkownika" onChange={evt => this.updateRegistrationUsername(evt)}/>
+
+                    <label><b>E-mail</b></label>
+                    <input type="email" placeholder="Wprowadź E-mail" onChange={evt => this.updateRegistrationEmail(evt)}/>
 
                     <label><b>Hasło</b></label>
-                    <input type="password" placeholder="Wprowadź hasło" onChange={evt => this.updatePassword(evt)}/>
+                    <input type="password" placeholder="Wprowadź hasło" onChange={evt => this.updateRegistrationPassword(evt)}/>
 
                     <label><b>Powtórz hasło</b></label>
-                    <input type="password" placeholder="Powtórz hasło" onChange={evt => this.updateRepeatedPassword(evt)}/>
+                    <input type="password" placeholder="Powtórz hasło" onChange={evt => this.updateRegistrationRepeatedPassword(evt)}/>
 
                     <button className="big_green_button registration_popup_registration_button" type="button"
                             onClick={this.clickedRegistrationButton}>Zarejestruj się
@@ -142,21 +206,39 @@ export class Login extends React.Component {
         );
     }
 
-    updateUsername(evt) {
+    updateLoginUsername(evt) {
         this.setState({
             login_username: evt.target
         });
     }
 
-    updatePassword(evt) {
+    updateLoginPassword(evt) {
         this.setState({
             login_password: evt.target
         });
     }
 
-    updateRepeatedPassword(evt) {
+    updateRegistrationUsername(evt) {
         this.setState({
-            login_repeated_password: evt.target
+            registration_username: evt.target
+        });
+    }
+
+    updateRegistrationPassword(evt) {
+        this.setState({
+            registration_password: evt.target
+        });
+    }
+
+    updateRegistrationRepeatedPassword(evt) {
+        this.setState({
+            registration_repeated_password: evt.target
+        });
+    }
+
+    updateRegistrationEmail(evt){
+        this.setState({
+            registration_email: evt.target
         });
     }
 
@@ -179,6 +261,12 @@ export class Login extends React.Component {
     refactorToRegistrationPopup() {
         const content = this.getRegistrationForm();
 
+        if(this.state.login_username)
+            this.state.login_username.value = '';
+
+        if(this.state.login_password)
+            this.state.login_password.value = '';
+
         PopupboxManager.update({
             content,
             config: {
@@ -191,6 +279,18 @@ export class Login extends React.Component {
 
     refactorToLoginPopup() {
         const content = this.getLoginForm();
+
+        if (this.state.registration_username)
+            this.state.registration_username.value = '';
+
+        if (this.state.registration_password)
+            this.state.registration_password.value = '';
+
+        if (this.state.registration_repeated_password)
+            this.state.registration_repeated_password.value = '';
+
+        if (this.state.registration_email)
+            this.state.registration_email.value = '';
 
         PopupboxManager.update({
             content,
@@ -205,7 +305,7 @@ export class Login extends React.Component {
     render() {
         return (
             <div>
-                <button onClick={a => this.openLoginPopup(a)}>{this.state.button_text}</button>
+                <button onClick={a => this.openLoginPopup(a)}> {this.state.button_text} </button>
                 <PopupboxContainer/>
             </div>
         )
