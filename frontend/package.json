@@ -9,7 +9,7 @@
     "react-leaflet": "^2.6.0",
     "react-leaflet-control": "^2.1.1",
     "react-popupbox": "^2.0.8",
-    "react-scripts": "3.2.0"
+    "react-scripts": "1.1.4"
   },
   "scripts": {
     "start": "react-scripts start",

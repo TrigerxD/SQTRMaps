@@ -2,6 +2,7 @@ import React from 'react'
 import {Map, Marker, Popup, TileLayer} from 'react-leaflet'
 import Control from 'react-leaflet-control';
 import {Login} from "./Login";
+import {Captcha} from "./Captcha";
 
 const aeiLat = 50.28868461815858;
 const aeiLng = 18.67756247520447;
@@ -66,9 +67,7 @@ class App extends React.Component {
                 />
 
                 <Control position="topright">
-                    <button onClick={this.sendLocalization}>
-                        Wyślij lokalizację
-                    </button>
+                    <Captcha lat={this.state.latitude} lng={this.state.longitude} token={this.state.access_token} />
                 </Control>
 
                 <Control position="topright">

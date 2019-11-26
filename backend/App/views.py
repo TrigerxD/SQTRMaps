@@ -8,13 +8,26 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import MarkerSerializer, CompanySerializer, UserSerializer
 from .models import Marker, Company
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated,  AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.core import serializers
 import json
 from django.http import HttpResponse
 
 
 # Create your views here.
+
+
+class MarkerViewAdd(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, *args, **kwargs):
+        received_json_data = json.loads(self.request.body)
+        lat = received_json_data['lat']
+        lng = received_json_data['lng']
+        # company = received_json_data['company']
+        marker = Marker(lat=lat, lng=lng)
+        marker.save()
+        return HttpResponse(status=200)
 
 
 class MarkerViewAll(APIView):
@@ -26,19 +39,6 @@ class MarkerViewAll(APIView):
         serialized_qs = serializers.serialize('json', queryset)
         content = {'message': serialized_qs}
         return Response(content)
-
-    def post(self, *args, **kwargs):
-        received_json_data = json.loads(self.request.body)
-        content = received_json_data['data']
-        lat = content['lat']
-        lng = content['lng']
-        # company = content['company']
-        user = self.request.user
-        marker = Marker(user=user, lat=lat, lng=lng)
-        marker.save()
-        # serialized_obj = serializers.serialize('json', [marker, ])
-        # content = {'message': serialized_obj}
-        return HttpResponse(status=200)
 
 
 class UserView(APIView):
@@ -54,4 +54,3 @@ class UserView(APIView):
 
         User.objects.create_user(username=username, password=password, email=email)
         return HttpResponse(status=201)
-

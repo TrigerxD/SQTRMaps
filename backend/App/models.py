@@ -11,7 +11,7 @@ class Company(models.Model):
 
 
 class Marker(models.Model):
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    # user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     lat = models.FloatField(null=False, default=None)
     lng = models.FloatField(null=False, default=None)
     insertion_date = models.DateTimeField(default=timezone.now)

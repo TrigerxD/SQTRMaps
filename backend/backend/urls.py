@@ -27,6 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('marker/', views.MarkerViewAll.as_view(), name='marker'),
+    path('addmarker/', views.MarkerViewAdd.as_view(), name='addmarker'),
+    path('allmarkers/', views.MarkerViewAll.as_view(), name='allmarkers'),
     path('user/', UserView.as_view(), name='user'),
 ]
