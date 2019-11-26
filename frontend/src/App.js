@@ -67,7 +67,7 @@ class App extends React.Component {
                 />
 
                 <Control position="topright">
-                    <Captcha lat={this.state.latitude} lng={this.state.longitude} token={this.state.access_token} />
+                    <Captcha lat={this.state.latitude} lng={this.state.longitude}/>
                 </Control>
 
                 <Control position="topright">

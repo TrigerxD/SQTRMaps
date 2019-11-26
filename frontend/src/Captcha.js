@@ -11,8 +11,7 @@ export class Captcha extends React.Component {
         this.state = {
             isVerified: false,
             latitude: 0,
-            longitude: 0,
-            token: ''
+            longitude: 0
         };
         this.verifyCallback = this.verifyCallback.bind(this);
         this.openPopupbox = this.openPopupbox.bind(this);
@@ -43,6 +42,7 @@ export class Captcha extends React.Component {
     }
 
     closePopup() {
+        this.setState({isVerified: false});
         PopupboxManager.close({
             config: {
                 fadeOut: true,
@@ -95,8 +95,7 @@ export class Captcha extends React.Component {
         this.setState({
             latitude: this.props.lat,
             isVerified: false,
-            longitude: this.props.lng,
-            token: this.props.token
+            longitude: this.props.lng
         });
         const content = this.getCaptcha();
         PopupboxManager.open({
