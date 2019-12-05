@@ -60,6 +60,19 @@ class UserView(APIView):
         return HttpResponse(status=201)
 
 
+def merge_all_coordinates_lists(coordinates_json):
+    area = coordinates_json['area']
+    coordinates_list = area['coordinates']
+    merged_coordinates_list = list()
+
+    for nested_coordinate_list in coordinates_list:
+        for nested_coordinate_list2 in nested_coordinate_list:
+            for coordinate in nested_coordinate_list2:
+                merged_coordinates_list.append({'lat': coordinate[0], 'lng': coordinate[1]})
+
+    return merged_coordinates_list
+
+
 class BlinkeeApiView(APIView):
     permission_classes = (IsAuthenticated,)
     url = 'http://blinkee.city/api/regions'
@@ -72,9 +85,10 @@ class BlinkeeApiView(APIView):
             for blinkee_city in blinkee_data:
                 if remove_regional_chars(blinkee_city['name']) == kwargs['city']:
                     zones = blinkee_city['zones']
-                    hulajnogi = zones[1]
-                    area = hulajnogi['area']
-                    coordinates = area['coordinates']
+                    if kwargs['vehicle'] == 'scooters':
+                        coordinates = merge_all_coordinates_lists(zones[1])
+                    elif kwargs['vehicle'] == 'motor_scooters':
+                        coordinates = merge_all_coordinates_lists(zones[0])
 
         if coordinates != '':
             return Response(coordinates, status=200)

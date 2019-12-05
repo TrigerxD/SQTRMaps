@@ -29,5 +29,5 @@ urlpatterns = [
     path('api/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('marker/', App.views.MarkerViewAll.as_view(), name='marker'),
     path('user/', UserView.as_view(), name='user'),
-    path('blinkee/<slug:city>/', BlinkeeApiView.as_view(), name='blinkee'),
+    path('blinkee/<slug:vehicle>/<slug:city>/', BlinkeeApiView.as_view(), name='blinkee'),
 ]
