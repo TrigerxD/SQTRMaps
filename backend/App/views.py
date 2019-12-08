@@ -73,7 +73,7 @@ def merge_all_coordinates_lists(coordinates_json):
     return merged_coordinates_list
 
 
-class BlinkeeApiView(APIView):
+class BlinkeeApiCitiesView(APIView):
     permission_classes = (IsAuthenticated,)
     url = 'http://blinkee.city/api/regions'
 
@@ -84,6 +84,49 @@ class BlinkeeApiView(APIView):
             blinkee_data = json.loads(response.read())
             for blinkee_city in blinkee_data:
                 if remove_regional_chars(blinkee_city['name']) == kwargs['city']:
+                    zones = blinkee_city['zones']
+                    if kwargs['vehicle'] == 'scooters':
+                        coordinates = merge_all_coordinates_lists(zones[1])
+                    elif kwargs['vehicle'] == 'motor_scooters':
+                        coordinates = merge_all_coordinates_lists(zones[0])
+
+        if coordinates != '':
+            return Response(coordinates, status=200)
+        else:
+            return Response(status=404)
+
+
+def is_fit_in_bounds(blinkee_city, lat, lng):
+    min_lng, min_lat, max_lng, max_lat = blinkee_city['bounds']
+    if min_lat <= lat <= max_lat:
+        if min_lng <= lng <= max_lng:
+            return True
+
+    return False
+
+
+class BlinkeeApiCoordinatesView(APIView):
+    permission_classes = (IsAuthenticated,)
+    url = 'http://blinkee.city/api/regions'
+
+    def get(self, *args, **kwargs):
+        lat = kwargs['lat']
+        lng = kwargs['lng']
+
+        if not lat.replace(".", "", 1).isdigit():
+            return Response(status=404)
+
+        if not lng.replace(".", "", 1).isdigit():
+            return Response(status=404)
+
+        lat = float(lat)
+        lng = float(lng)
+
+        coordinates = ''
+        with urllib.request.urlopen(self.url) as response:
+            blinkee_data = json.loads(response.read())
+            for blinkee_city in blinkee_data:
+                if is_fit_in_bounds(blinkee_city, lat, lng):
                     zones = blinkee_city['zones']
                     if kwargs['vehicle'] == 'scooters':
                         coordinates = merge_all_coordinates_lists(zones[1])

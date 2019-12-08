@@ -21,7 +21,7 @@ from rest_framework_simplejwt.views import (
 )
 
 import App
-from App.views import UserView, BlinkeeApiView
+from App.views import UserView, BlinkeeApiCitiesView, BlinkeeApiCoordinatesView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,5 +29,7 @@ urlpatterns = [
     path('api/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('marker/', App.views.MarkerViewAll.as_view(), name='marker'),
     path('user/', UserView.as_view(), name='user'),
-    path('blinkee/<slug:vehicle>/<slug:city>/', BlinkeeApiView.as_view(), name='blinkee'),
+    path('blinkee/<slug:vehicle>/<slug:city>/', BlinkeeApiCitiesView.as_view(), name='blinkee_cities'),
+    path('blinkee/<slug:vehicle>/<str:lat>/<str:lng>/', BlinkeeApiCoordinatesView.as_view(),
+         name='blinkee_coordinates'),
 ]
