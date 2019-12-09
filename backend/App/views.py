@@ -98,8 +98,10 @@ class BlinkeeApiCitiesView(APIView):
 
 def is_fit_in_bounds(blinkee_city, lat, lng):
     min_lng, min_lat, max_lng, max_lat = blinkee_city['bounds']
-    if min_lat <= lat <= max_lat:
-        if min_lng <= lng <= max_lng:
+    border_scooter_in_city_650m = 0.005
+
+    if min_lat - border_scooter_in_city_650m <= lat <= max_lat + border_scooter_in_city_650m:
+        if min_lng - border_scooter_in_city_650m <= lng <= max_lng + border_scooter_in_city_650m:
             return True
 
     return False
@@ -114,10 +116,10 @@ class BlinkeeApiCoordinatesView(APIView):
         lng = kwargs['lng']
 
         if not lat.replace(".", "", 1).isdigit():
-            return Response(status=404)
+            return Response(status=400)
 
         if not lng.replace(".", "", 1).isdigit():
-            return Response(status=404)
+            return Response(status=400)
 
         lat = float(lat)
         lng = float(lng)
