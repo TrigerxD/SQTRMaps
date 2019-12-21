@@ -28,6 +28,8 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('marker/', App.views.MarkerViewAll.as_view(), name='marker'),
+    path('addmarker/', App.views.MarkerViewAdd.as_view(), name='addmarker'),
+    path('allmarkers/', App.views.MarkerViewAll.as_view(), name='allmarkers'),
     path('user/', UserView.as_view(), name='user'),
     path('blinkee/<slug:vehicle>/<slug:city>/', BlinkeeApiCitiesView.as_view(), name='blinkee_cities'),
     path('blinkee/<slug:vehicle>/<str:lat>/<str:lng>/', BlinkeeApiCoordinatesView.as_view(),
