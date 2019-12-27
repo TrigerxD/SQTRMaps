@@ -16,6 +16,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.core import serializers
 import json
 from django.http import HttpResponse, JsonResponse
+from django.forms.models import model_to_dict
 
 
 # Create your views here.
@@ -39,10 +40,7 @@ class MarkerViewAll(APIView):
 
     # zwraca wszystkie zapisane markery
     def get(self, *args, **kwargs):
-        queryset = Marker.objects.all()
-        serialized_qs = serializers.serialize('json', queryset)
-        content = {'message': serialized_qs}
-        return Response(content)
+        return JsonResponse(list(Marker.objects.all().values()), safe=False)
 
 
 class UserView(APIView):
