@@ -3,6 +3,7 @@ import {Map, Marker, Popup, TileLayer} from 'react-leaflet'
 import Control from 'react-leaflet-control';
 import {Login} from "./Login";
 import {Captcha} from "./Captcha";
+import {MarkersView} from "./markers";
 
 const aeiLat = 50.28868461815858;
 const aeiLng = 18.67756247520447;
@@ -74,6 +75,10 @@ class App extends React.Component {
                     <button onClick={this.getMyLocation}>
                         Wybierz moją lokalizację
                     </button>
+                </Control>
+
+                <Control position="topright">
+                    <MarkersView lat={this.state.latitude} lng={this.state.longitude} tkn={this.state.access_token}/>
                 </Control>
 
                 <Control position="topright">

@@ -78,7 +78,7 @@ export class Login extends React.Component {
     }
 
     logged(access_token, refresh_token) {
-        alert('Zalogowano!');
+        //alert('Zalogowano!');
 
         PopupboxManager.close({
             config: {
