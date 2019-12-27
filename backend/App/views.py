@@ -36,7 +36,7 @@ class MarkerViewAdd(APIView):
 
 
 class MarkerViewAll(APIView):   
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     # zwraca wszystkie zapisane markery
     def get(self, *args, **kwargs):

@@ -1,12 +1,15 @@
 import React from "react";
+import {Map, Marker, Popup, TileLayer} from 'react-leaflet'
 
 export class MarkersView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            latitude: this.props.lat,
-            longitude: this.props.lng,
-            token: this.props.tkn
+            latitude: 999,
+            longitude: 999,
+            token: 'x',
+            markers: [],
+            data: []
         };
         this.printMarker = this.printMarker.bind(this);
         this.getMarkersFromApi = this.getMarkersFromApi.bind(this);
@@ -15,31 +18,71 @@ export class MarkersView extends React.Component {
     }
 
     componentDidMount() {
-
+        this.setState({
+            latitude: this.props.lat,
+            longitude: this.props.lng,
+            token: this.props.tkn
+        });
     }
 
-    printMarker(){
-    }
+    printMarker(lat,lng){
+    const location = [lat, lng]
+    return(
+        <Marker position={location}>
+            <Popup>Lokalizacja hulajnogi</Popup>
+        </Marker>
+    )}
 
     getMarkersFromApi(){
+        console.log('get markers from api: ' + this.state.latitude + ' ' + this.state.longitude + ' ' + this.state.token);
+        function responseService(response, obj) {
+            if (!response.ok)
+                alert('Coś poszło nie tak');
+
+            var json = response.json()
+            json.then(function(values){
+                for (var i = 0; i < values.length; i++){
+                    var temp = obj.state.markers;
+                    temp.push([values[i].lat, values[i].lng])
+                    obj.setState({markers : temp})
+                }
+            })
+        }
+
+        fetch('http://127.0.0.1:8000/blinkee/scooters/'+this.state.latitude+'/'+this.state.longitude+'/', {
+            method: 'get',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.state.token
+            },
+        })
+        .then(response => responseService(response, this))
+        .catch(error => console.log(error));
     }
 
     getMarkersFromBase(){
-        console.log('get markers: ' + this.state.latitude + ' ' + this.state.longitude + ' ' + this.state.token);
-        function responseService(response) {
-            console.log(response);
+        console.log('get markers from base: ' + this.state.latitude + ' ' + this.state.longitude + ' ' + this.state.token);
+        function responseService(response, obj) {
             if (!response.ok)
                 alert('Coś poszło nie tak');
+            var json = response.json()
+            json.then(function(values){
+                for (var i = 0; i < values.length; i++){
+                    var temp = obj.state.markers;
+                    temp.push([values[i].lat, values[i].lng])
+                    obj.setState({markers : temp})
+                }
+            })
         }
 
         fetch('http://127.0.0.1:8000/allmarkers/', {
             method: 'get',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': this.state.token
+                'Authorization': 'Bearer ' + this.state.token
             },
         })
-        .then(responseService)
+        .then(response => responseService(response, this))
         .catch(error => console.log(error));
     }
 
@@ -52,6 +95,8 @@ export class MarkersView extends React.Component {
         console.log(this.state.latitude);
         console.log(this.state.longitude);
         this.getMarkersFromBase();
+        this.getMarkersFromApi();
+        console.log(this.state.markers)
     }
 
     render() {
