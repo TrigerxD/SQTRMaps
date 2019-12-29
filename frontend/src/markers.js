@@ -1,5 +1,7 @@
 import React from "react";
+import L from 'leaflet'
 import {Map, Marker, Popup, TileLayer} from 'react-leaflet'
+import {render} from 'react-dom'
 
 export class MarkersView extends React.Component {
     constructor(props) {
@@ -43,7 +45,7 @@ export class MarkersView extends React.Component {
             json.then(function(values){
                 for (var i = 0; i < values.length; i++){
                     var temp = obj.state.markers;
-                    temp.push([values[i].lat, values[i].lng])
+                    temp.push([values[i].lng, values[i].lat])
                     obj.setState({markers : temp})
                 }
             })
@@ -69,7 +71,7 @@ export class MarkersView extends React.Component {
             json.then(function(values){
                 for (var i = 0; i < values.length; i++){
                     var temp = obj.state.markers;
-                    temp.push([values[i].lat, values[i].lng])
+                    temp.push([values[i].lng, values[i].lat])
                     obj.setState({markers : temp})
                 }
             })
@@ -95,7 +97,7 @@ export class MarkersView extends React.Component {
         console.log(this.state.latitude);
         console.log(this.state.longitude);
         this.getMarkersFromBase();
-        this.getMarkersFromApi();
+        //this.getMarkersFromApi();
         console.log(this.state.markers)
     }
 
@@ -103,6 +105,13 @@ export class MarkersView extends React.Component {
         return (
             <div>
                 <button onClick={this.viewMarkers}>Wyświetl hulajnogi</button>
+                {this.state.markers.map((position, idx) =>
+                   <Marker key={'marker-${idx}'} position={position}>
+                       <Popup>
+                           hulajnoga
+                       </Popup>
+                   </Marker>
+                )}
             </div>
         )
     }

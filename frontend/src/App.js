@@ -1,6 +1,8 @@
 import React from 'react'
-import {Map, Marker, Popup, TileLayer} from 'react-leaflet'
+import L from 'leaflet'
+import {Map, Marker, Popup, TileLayer, LayerGroup} from 'react-leaflet'
 import Control from 'react-leaflet-control';
+import R from 'react-dom'
 import {Login} from "./Login";
 import {Captcha} from "./Captcha";
 import {MarkersView} from "./markers";
@@ -12,10 +14,13 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            isLoading: true,
             latitude: aeiLat,
             longitude: aeiLng,
             access_token: '',
-            refresh_token: ''
+            refresh_token: '',
+            markers: [[aeiLat, aeiLng]],
+            data: []
         };
         this.getMyLocation = this.getMyLocation.bind(this);
         this.newMarkerPosition = this.newMarkerPosition.bind(this);
@@ -24,6 +29,7 @@ class App extends React.Component {
 
     componentDidMount() {
         this.getMyLocation()
+        this.state.isLoading = false;
     }
 
     newMarkerPosition(e) {
@@ -31,6 +37,7 @@ class App extends React.Component {
         this.setState({
             latitude: lat,
             longitude: lng,
+            markers: [[lat, lng]]
         });
     }
 
@@ -45,9 +52,14 @@ class App extends React.Component {
                 this.setState({
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
+                    markers: [[position.coords.latitude, position.coords.longitude]]
                 })
             }, (error) => {
-                this.setState({latitude: aeiLat, longitude: aeiLng})
+                this.setState({
+                    latitude: aeiLat,
+                    longitude: aeiLng,
+                    markers: [[aeiLat, aeiLng]]
+                    })
             })
         }
 
@@ -58,10 +70,19 @@ class App extends React.Component {
     };
 
     render() {
+        const {
+            clients, isLoading
+        } = this.state;
+
+        if (isLoading) {
+            return <p > Loading... < /p >;
+        }
+
         const {latitude, longitude} = this.state;
-        const geoLocation = [latitude, longitude];
-        return (
-            <Map center={geoLocation} zoom={17} maxZoom={19} onClick={this.newMarkerPosition}>
+        const position = [latitude, longitude];
+
+        return(
+            <Map center={position} zoom={17} maxZoom={19} onClick={this.newMarkerPosition}>
                 <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
@@ -78,18 +99,21 @@ class App extends React.Component {
                 </Control>
 
                 <Control position="topright">
-                    <MarkersView lat={this.state.latitude} lng={this.state.longitude} tkn={this.state.access_token}/>
+                    <MarkersView lat={this.state.latitude} lng={this.state.longitude} tkn={this.state.access_token} />
                 </Control>
 
                 <Control position="topright">
                     <Login onLogged={this.onLogged}/>
                 </Control>
 
-                <Marker position={geoLocation}>
-                    <Popup>Lokalizacja hulajnogi</Popup>
+                <Marker position={position} opacity='0.5'>
+                    <Popup>
+                        hulajnoga
+                    </Popup>
                 </Marker>
+
             </Map>
-        );
+        )
     }
 }
 
