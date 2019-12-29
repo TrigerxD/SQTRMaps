@@ -82,7 +82,7 @@ class App extends React.Component {
         const position = [latitude, longitude];
 
         return(
-            <Map center={position} zoom={17} maxZoom={19} onClick={this.newMarkerPosition}>
+            <Map center={position} zoom={17} maxZoom={19} onClick={this.newMarkerPosition} id='map'>
                 <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"

@@ -59,7 +59,6 @@ export class Login extends React.Component {
         function tokenService(response_json, login_context) {
             if (!response_json)
                 return;
-            console.log(response_json)
             login_context.setState({access_token: response_json.access, refresh_token: response_json.refresh});
             login_context.logged(response_json.access, response_json.refresh)
         }
