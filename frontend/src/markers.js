@@ -7,6 +7,7 @@ export class MarkersView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            markersLoading: false,
             isLoading: true,
             latitude: 999,
             longitude: 999,
@@ -22,6 +23,7 @@ export class MarkersView extends React.Component {
 
     componentDidMount() {
         this.setState({
+            markers: [],
             latitude: this.props.lat,
             longitude: this.props.lng,
             token: this.props.tkn
@@ -59,7 +61,7 @@ export class MarkersView extends React.Component {
                         obj.setState({markers : temp})
                     }
                 }
-            })
+            }).then(obj.state.markersLoading = false)
         }
 
         fetch('http://127.0.0.1:8000/blinkee/scooters/'+this.props.lat+'/'+this.props.lng+'/', {
@@ -70,7 +72,7 @@ export class MarkersView extends React.Component {
             },
         })
         .then(response => responseService(response, this))
-        .catch(error => console.log(error));
+        .catch(error => console.log(error))
     }
 
     getMarkersFromBase(){
@@ -111,6 +113,7 @@ export class MarkersView extends React.Component {
 
     viewMarkers() {
         this.setState({
+            markersLoading: true,
             latitude: this.props.lat,
             longitude: this.props.lng,
             token: this.props.tkn,
@@ -118,10 +121,19 @@ export class MarkersView extends React.Component {
         });
         this.getMarkersFromBase();
         this.getMarkersFromApi();
-        console.log(this.state.data)
     }
 
     render() {
+        if(!this.props.tkn){
+            this.state.markers = []
+            this.state.markersLoading = false;
+            return('')
+        }
+
+        console.log(this.state.markersLoading)
+        if(this.state.markersLoading)
+            return <p > Loading... < /p >;
+
         return (
             <div>
                 <button onClick={this.viewMarkers}>Wyświetl hulajnogi</button>

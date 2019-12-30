@@ -71,7 +71,7 @@ class App extends React.Component {
 
     render() {
         const {
-            clients, isLoading
+             isLoading
         } = this.state;
 
         if (isLoading) {
