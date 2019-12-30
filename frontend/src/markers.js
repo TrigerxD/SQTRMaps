@@ -2,6 +2,7 @@ import React from "react";
 import L from 'leaflet'
 import {Map, Marker, Popup, TileLayer} from 'react-leaflet'
 import {render} from 'react-dom'
+import {PopupboxManager} from "react-popupbox";
 
 export class MarkersView extends React.Component {
     constructor(props) {
@@ -137,9 +138,25 @@ export class MarkersView extends React.Component {
             return('')
         }
 
+        const content = <h1>Wczytywanie...</h1>;
         console.log(this.state.markersLoading)
-        if(this.state.markersLoading)
-            return <p > Loading... < /p >;
+        if(this.state.markersLoading){
+            PopupboxManager.open({
+                content,
+                config: {
+                    titleBar: {
+                        enable: false,
+                    },
+                    overlayClose:false,
+                    fadeIn: true,
+                    fadeInSpeed: 500
+                }
+            })
+        }else {
+            PopupboxManager.close();
+        }
+
+            //return <p > Loading... < /p >;
 
         return (
             <div>
