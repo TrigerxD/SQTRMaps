@@ -13,10 +13,10 @@ export class Captcha extends React.Component {
             latitude: 0,
             longitude: 0
         };
+        this.onloadCallback = this.onloadCallback.bind(this);
         this.verifyCallback = this.verifyCallback.bind(this);
         this.openPopupbox = this.openPopupbox.bind(this);
         this.getCaptcha = this.getCaptcha.bind(this);
-        this.onloadCallback = this.onloadCallback.bind(this);
         this.sendMarker = this.sendMarker.bind(this);
     }
 
@@ -38,6 +38,7 @@ export class Captcha extends React.Component {
         if (recaptchaToken) {
             this.setState({isVerified: true});
             this.sendMarker();
+            this.captchaObject.reset();
         }
     }
 
@@ -52,7 +53,7 @@ export class Captcha extends React.Component {
     }
 
     sendMarker() {
-        console.log('Sending loc to server: ' + this.state.latitude + ' ' + this.state.longitude);
+        // console.log('Sending loc to server: ' + this.state.latitude + ' ' + this.state.longitude);
 
         function responseService(response) {
             if (!response.ok)
