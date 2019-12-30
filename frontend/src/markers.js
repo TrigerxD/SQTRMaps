@@ -42,7 +42,6 @@ export class MarkersView extends React.Component {
         console.log('get markers from api');
         function responseService(response, obj) {
             if (!response.ok){
-            console.log(response.status)
                 if(response.status == 404)
                     alert('Brak hulajnóg BlinkEye w mieście');
                 obj.setState({markersLoading : false})
@@ -64,7 +63,9 @@ export class MarkersView extends React.Component {
                         obj.setState({markers : temp})
                     }
                 }
-            }).then(obj.state.markersLoading = false)
+                obj.setState({markersLoading : false})
+            })
+
         }
 
         fetch('http://127.0.0.1:8000/blinkee/scooters/'+this.props.lat+'/'+this.props.lng+'/', {
