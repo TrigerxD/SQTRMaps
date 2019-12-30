@@ -42,7 +42,10 @@ export class MarkersView extends React.Component {
         console.log('get markers from api');
         function responseService(response, obj) {
             if (!response.ok){
-                //alert('Coś poszło nie tak');
+            console.log(response.status)
+                if(response.status == 404)
+                    alert('Brak hulajnóg BlinkEye w mieście');
+                obj.setState({markersLoading : false})
                 return
                 }
 
@@ -78,10 +81,13 @@ export class MarkersView extends React.Component {
     getMarkersFromBase(){
         console.log('get markers from base');
         function responseService(response, obj) {
-            if (!response.ok){
-                //alert('Coś poszło nie tak');
-                return
-                }
+             if (!response.ok){
+             console.log(response.status)
+                 if(response.status == 404)
+                     alert('Brak hulajnóg w promieniu 1km');
+                 obj.setState({markersLoading : false})
+                 return
+                 }
             var json = response.json()
             json.then(function(values){
                 for (var i = 0; i < values.length; i++){
