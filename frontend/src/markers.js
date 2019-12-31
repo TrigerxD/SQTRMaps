@@ -1,7 +1,5 @@
 import React from "react";
-import L from 'leaflet'
-import {Map, Marker, Popup, TileLayer} from 'react-leaflet'
-import {render} from 'react-dom'
+import {Marker, Popup} from 'react-leaflet'
 import {PopupboxManager} from "react-popupbox";
 import './markers.css';
 
@@ -33,81 +31,84 @@ export class MarkersView extends React.Component {
         });
     }
 
-    printMarker(lat,lng){
-    const location = [lat, lng]
-    return(
-        <Marker position={location}>
-            <Popup>Lokalizacja hulajnogi</Popup>
-        </Marker>
-    )}
+    printMarker(lat, lng) {
+        const location = [lat, lng]
+        return (
+            <Marker position={location}>
+                <Popup>Lokalizacja hulajnogi</Popup>
+            </Marker>
+        )
+    }
 
-    getMarkersFromApi(){
+    getMarkersFromApi() {
         console.log('get markers from api');
+
         function responseService(response, obj) {
-            if (!response.ok){
-                if(response.status == 404)
+            if (!response.ok) {
+                if (response.status == 404)
                     alert('Brak hulajnóg BlinkEye w mieście');
-                obj.setState({markersLoading : false})
+                obj.setState({markersLoading: false})
                 return
-                }
+            }
 
             var json = response.json()
-            json.then(function(values){
-                for (var i = 0; i < values.length; i++){
+            json.then(function (values) {
+                for (var i = 0; i < values.length; i++) {
                     var a1 = obj.state.latitude
                     var a2 = values[i].lat
                     var b1 = obj.state.longitude
                     var b2 = values[i].lng
-                    var odl = Math.acos((Math.sin(a1)*Math.sin(a2)+Math.cos(a1)*Math.cos(a2)*Math.cos(Math.abs(b1-b2))))
+                    var odl = Math.acos((Math.sin(a1) * Math.sin(a2) + Math.cos(a1) * Math.cos(a2) * Math.cos(Math.abs(b1 - b2))))
 
-                    if(odl * 111.195 <= 1){
+                    if (odl * 111.195 <= 1) {
                         var temp = obj.state.markers;
                         temp.push([values[i].lat, values[i].lng])
-                        obj.setState({markers : temp})
+                        obj.setState({markers: temp})
                     }
                 }
-                obj.setState({markersLoading : false})
+                obj.setState({markersLoading: false})
             })
 
         }
 
-        fetch('http://127.0.0.1:8000/blinkee/scooters/'+this.props.lat+'/'+this.props.lng+'/', {
+        fetch('http://127.0.0.1:8000/blinkee/scooters/' + this.props.lat + '/' + this.props.lng + '/', {
             method: 'get',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + this.props.tkn
             },
         })
-        .then(response => responseService(response, this))
-        .catch(error => console.log(error))
+            .then(response => responseService(response, this))
+            .catch(error => console.log(error))
     }
 
-    getMarkersFromBase(){
+    getMarkersFromBase() {
         console.log('get markers from base');
+
         function responseService(response, obj) {
-             if (!response.ok){
-             console.log(response.status)
-                 if(response.status == 404)
-                     alert('Brak hulajnóg w promieniu 1km');
-                 obj.setState({markersLoading : false})
-                 return
-                 }
+            if (!response.ok) {
+                console.log(response.status)
+                if (response.status == 404)
+                    alert('Brak hulajnóg w promieniu 1km');
+                obj.setState({markersLoading: false})
+                return
+            }
             var json = response.json()
-            json.then(function(values){
-                for (var i = 0; i < values.length; i++){
+            json.then(function (values) {
+                for (var i = 0; i < values.length; i++) {
                     var a1 = obj.state.latitude
                     var a2 = values[i].lng
                     var b1 = obj.state.longitude
                     var b2 = values[i].lat
-                    var odl = Math.acos((Math.sin(a1)*Math.sin(a2)+Math.cos(a1)*Math.cos(a2)*Math.cos(Math.abs(b1-b2))))
+                    var odl = Math.acos((Math.sin(a1) * Math.sin(a2) + Math.cos(a1) * Math.cos(a2) * Math.cos(Math.abs(b1 - b2))))
 
-                    if(odl * 111.195 <= 1){
+                    if (odl * 111.195 <= 1) {
                         var temp = obj.state.markers;
                         temp.push([values[i].lng, values[i].lat])
-                        obj.setState({markers : temp})
+                        obj.setState({markers: temp})
                     }
                 }
-                obj.setState({markersLoading : false})
+                obj.setState({markersLoading: false})
             })
         }
 
@@ -118,8 +119,8 @@ export class MarkersView extends React.Component {
                 'Authorization': 'Bearer ' + this.props.tkn
             },
         })
-        .then(response => responseService(response, this))
-        .catch(error => console.log(error));
+            .then(response => responseService(response, this))
+            .catch(error => console.log(error));
     }
 
     viewMarkersFromBase() {
@@ -147,44 +148,36 @@ export class MarkersView extends React.Component {
     }
 
     render() {
-        if(!this.props.tkn){
+        if (!this.props.tkn) {
             this.state.markers = []
             this.state.markersLoading = false;
-            return('')
+            return ('')
         }
 
         const content = <h1>Wczytywanie...</h1>;
         console.log(this.state.markersLoading)
-        if(this.state.markersLoading){
+        if (this.state.markersLoading) {
             PopupboxManager.open({
                 content,
                 config: {
                     titleBar: {
                         enable: false,
                     },
-                    overlayClose:false,
+                    overlayClose: false,
                     fadeIn: true,
                     fadeInSpeed: 500
                 }
             })
-        }else {
+        } else {
             PopupboxManager.close();
         }
 
-            //return <p > Loading... < /p >;
+        //return <p > Loading... < /p >;
 
         return (
-            <div>
-                <button onClick={this.viewMarkersFromBase}>Wyświetl hulajnogi z bazy</button>
-                {this.state.markers.map((position, idx) =>
-                   <Marker key={idx} position={position}>
-                       <Popup>
-                           {position[0]}, {position[1]}
-                       </Popup>
-                   </Marker>
-                )}
+            <div className="container2">
 
-                <button className={"submit_button"} onClick={this.viewMarkersFromApi}>Wyświetl hulajnogi z API</button>
+                <button onClick={this.viewMarkersFromBase}>Wyświetl hulajnogi z bazy</button>
                 {this.state.markers.map((position, idx) =>
                     <Marker key={idx} position={position}>
                         <Popup>
@@ -192,6 +185,17 @@ export class MarkersView extends React.Component {
                         </Popup>
                     </Marker>
                 )}
+
+                <button className={"submit_button"} onClick={this.viewMarkersFromApi}>Wyświetl hulajnogi z API
+                </button>
+                {this.state.markers.map((position, idx) =>
+                    <Marker key={idx} position={position}>
+                        <Popup>
+                            {position[0]}, {position[1]}
+                        </Popup>
+                    </Marker>
+                )}
+
             </div>
         )
     }

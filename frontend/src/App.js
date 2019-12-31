@@ -75,7 +75,7 @@ class App extends React.Component {
         } = this.state;
 
         if (isLoading) {
-            return <p > Loading... < /p >;
+            // return <p > Loading... < /p >;
         }
 
         const {latitude, longitude} = this.state;
