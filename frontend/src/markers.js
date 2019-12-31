@@ -3,6 +3,7 @@ import L from 'leaflet'
 import {Map, Marker, Popup, TileLayer} from 'react-leaflet'
 import {render} from 'react-dom'
 import {PopupboxManager} from "react-popupbox";
+import './markers.css';
 
 export class MarkersView extends React.Component {
     constructor(props) {
@@ -19,7 +20,8 @@ export class MarkersView extends React.Component {
         this.printMarker = this.printMarker.bind(this);
         this.getMarkersFromApi = this.getMarkersFromApi.bind(this);
         this.getMarkersFromBase = this.getMarkersFromBase.bind(this);
-        this.viewMarkers = this.viewMarkers.bind(this);
+        this.viewMarkersFromApi = this.viewMarkersFromApi.bind(this);
+        this.viewMarkersFromBase = this.viewMarkersFromBase.bind(this);
     }
 
     componentDidMount() {
@@ -105,6 +107,7 @@ export class MarkersView extends React.Component {
                         obj.setState({markers : temp})
                     }
                 }
+                obj.setState({markersLoading : false})
             })
         }
 
@@ -119,7 +122,7 @@ export class MarkersView extends React.Component {
         .catch(error => console.log(error));
     }
 
-    viewMarkers() {
+    viewMarkersFromBase() {
         this.setState({
             markersLoading: true,
             latitude: this.props.lat,
@@ -128,6 +131,18 @@ export class MarkersView extends React.Component {
             markers: []
         });
         this.getMarkersFromBase();
+        //this.getMarkersFromApi();
+    }
+
+    viewMarkersFromApi() {
+        this.setState({
+            markersLoading: true,
+            latitude: this.props.lat,
+            longitude: this.props.lng,
+            token: this.props.tkn,
+            markers: []
+        });
+        //this.getMarkersFromBase();
         this.getMarkersFromApi();
     }
 
@@ -160,13 +175,22 @@ export class MarkersView extends React.Component {
 
         return (
             <div>
-                <button onClick={this.viewMarkers}>Wyświetl hulajnogi</button>
+                <button onClick={this.viewMarkersFromBase}>Wyświetl hulajnogi z bazy</button>
                 {this.state.markers.map((position, idx) =>
                    <Marker key={idx} position={position}>
                        <Popup>
                            {position[0]}, {position[1]}
                        </Popup>
                    </Marker>
+                )}
+
+                <button className={"submit_button"} onClick={this.viewMarkersFromApi}>Wyświetl hulajnogi z API</button>
+                {this.state.markers.map((position, idx) =>
+                    <Marker key={idx} position={position}>
+                        <Popup>
+                            {position[0]}, {position[1]}
+                        </Popup>
+                    </Marker>
                 )}
             </div>
         )
