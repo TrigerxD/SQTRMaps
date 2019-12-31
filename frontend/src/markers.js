@@ -54,8 +54,11 @@ export class MarkersView extends React.Component {
                 return
                 }
 
-            if(obj.state.apiMarkers)
+            if(obj.state.apiMarkers){
+                obj.setState({markersLoading : false})
                 return
+            }
+
 
             var json = response.json()
             json.then(function(values){
