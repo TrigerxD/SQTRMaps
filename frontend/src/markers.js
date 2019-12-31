@@ -9,6 +9,8 @@ export class MarkersView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            apiMarkers: false,
+            baseMarkers: false,
             markersLoading: false,
             isLoading: true,
             latitude: 999,
@@ -22,6 +24,7 @@ export class MarkersView extends React.Component {
         this.getMarkersFromBase = this.getMarkersFromBase.bind(this);
         this.viewMarkersFromApi = this.viewMarkersFromApi.bind(this);
         this.viewMarkersFromBase = this.viewMarkersFromBase.bind(this);
+        this.eraseMap = this.eraseMap.bind(this);
     }
 
     componentDidMount() {
@@ -51,8 +54,12 @@ export class MarkersView extends React.Component {
                 return
                 }
 
+            if(obj.state.apiMarkers)
+                return
+
             var json = response.json()
             json.then(function(values){
+                var objects = []
                 for (var i = 0; i < values.length; i++){
                     var a1 = obj.state.latitude
                     var a2 = values[i].lat
@@ -61,12 +68,24 @@ export class MarkersView extends React.Component {
                     var odl = Math.acos((Math.sin(a1)*Math.sin(a2)+Math.cos(a1)*Math.cos(a2)*Math.cos(Math.abs(b1-b2))))
 
                     if(odl * 111.195 <= 1){
-                        var temp = obj.state.markers;
-                        temp.push([values[i].lat, values[i].lng])
-                        obj.setState({markers : temp})
+                        objects.push([values[i].lat, values[i].lng])
                     }
                 }
-                obj.setState({markersLoading : false})
+                if(objects.length > 0){
+                    var temp = obj.state.markers
+                    for( var i = 0; i < temp.length; i++)
+                        objects.push(temp[i])
+                    obj.setState({
+                        markers: objects,
+                        markersLoading : false,
+                        apiMarkers:true})
+                        }
+                else{
+                    alert('Brak hulajnóg BlinkEye w pobliżu')
+                    obj.setState({
+                        markersLoading : false,
+                        apiMarkers:false})
+                }
             })
 
         }
@@ -92,8 +111,15 @@ export class MarkersView extends React.Component {
                  obj.setState({markersLoading : false})
                  return
                  }
+
+             if(obj.state.baseMarkers){
+                obj.setState({markersLoading : false})
+                return
+                }
+
             var json = response.json()
             json.then(function(values){
+                var objects = []
                 for (var i = 0; i < values.length; i++){
                     var a1 = obj.state.latitude
                     var a2 = values[i].lng
@@ -102,12 +128,24 @@ export class MarkersView extends React.Component {
                     var odl = Math.acos((Math.sin(a1)*Math.sin(a2)+Math.cos(a1)*Math.cos(a2)*Math.cos(Math.abs(b1-b2))))
 
                     if(odl * 111.195 <= 1){
-                        var temp = obj.state.markers;
-                        temp.push([values[i].lng, values[i].lat])
-                        obj.setState({markers : temp})
+                        objects.push([values[i].lng, values[i].lat])
                     }
                 }
-                obj.setState({markersLoading : false})
+                if(objects.length > 0){
+                    var temp = obj.state.markers
+                    for( var i = 0; i < temp.length; i++)
+                        objects.push(temp[i])
+                    obj.setState({
+                        markers: objects,
+                        markersLoading : false,
+                        baseMarkers:true})
+                        }
+                else{
+                    alert('Brak hulajnóg oznaczonych przez użytkowników w pobliżu')
+                    obj.setState({
+                        markersLoading : false,
+                        baseMarkers:false})
+                }
             })
         }
 
@@ -127,8 +165,7 @@ export class MarkersView extends React.Component {
             markersLoading: true,
             latitude: this.props.lat,
             longitude: this.props.lng,
-            token: this.props.tkn,
-            markers: []
+            token: this.props.tkn
         });
         this.getMarkersFromBase();
         //this.getMarkersFromApi();
@@ -139,11 +176,14 @@ export class MarkersView extends React.Component {
             markersLoading: true,
             latitude: this.props.lat,
             longitude: this.props.lng,
-            token: this.props.tkn,
-            markers: []
+            token: this.props.tkn
         });
         //this.getMarkersFromBase();
         this.getMarkersFromApi();
+    }
+
+    eraseMap(){
+        this.setState({markers : [], baseMarkers: false, apiMarkers: false})
     }
 
     render() {
@@ -176,15 +216,8 @@ export class MarkersView extends React.Component {
         return (
             <div>
                 <button onClick={this.viewMarkersFromBase}>Wyświetl hulajnogi z bazy</button>
-                {this.state.markers.map((position, idx) =>
-                   <Marker key={idx} position={position}>
-                       <Popup>
-                           {position[0]}, {position[1]}
-                       </Popup>
-                   </Marker>
-                )}
-
                 <button className={"submit_button"} onClick={this.viewMarkersFromApi}>Wyświetl hulajnogi z API</button>
+                <button className={"submit_button"} onClick={this.eraseMap}>Wyczyść mapę</button>
                 {this.state.markers.map((position, idx) =>
                     <Marker key={idx} position={position}>
                         <Popup>

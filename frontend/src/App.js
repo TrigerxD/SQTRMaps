@@ -108,7 +108,7 @@ class App extends React.Component {
 
                 <Marker position={position} opacity='0.5'>
                     <Popup>
-                        hulajnoga
+                        Twoja wybrana lokazliacja
                     </Popup>
                 </Marker>
 
