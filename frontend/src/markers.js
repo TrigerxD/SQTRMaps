@@ -5,6 +5,24 @@ import {render} from 'react-dom'
 import {PopupboxManager} from "react-popupbox";
 import './markers.css';
 
+const greenIcon = new L.Icon({
+    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
+const blueIcon = new L.Icon({
+    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
 export class MarkersView extends React.Component {
     constructor(props) {
         super(props);
@@ -71,7 +89,7 @@ export class MarkersView extends React.Component {
                     var odl = Math.acos((Math.sin(a1)*Math.sin(a2)+Math.cos(a1)*Math.cos(a2)*Math.cos(Math.abs(b1-b2))))
 
                     if(odl * 111.195 <= 1){
-                        objects.push([values[i].lat, values[i].lng])
+                        objects.push([values[i].lat, values[i].lng, blueIcon])
                     }
                 }
                 if(objects.length > 0){
@@ -131,7 +149,7 @@ export class MarkersView extends React.Component {
                     var odl = Math.acos((Math.sin(a1)*Math.sin(a2)+Math.cos(a1)*Math.cos(a2)*Math.cos(Math.abs(b1-b2))))
 
                     if(odl * 111.195 <= 1){
-                        objects.push([values[i].lng, values[i].lat])
+                        objects.push([values[i].lng, values[i].lat, greenIcon])
                     }
                 }
                 if(objects.length > 0){
@@ -141,7 +159,7 @@ export class MarkersView extends React.Component {
                     obj.setState({
                         markers: objects,
                         markersLoading : false,
-                        baseMarkers:true})
+                        baseMarkers:true })
                         }
                 else{
                     alert('Brak hulajnóg oznaczonych przez użytkowników w pobliżu')
@@ -214,16 +232,17 @@ export class MarkersView extends React.Component {
             PopupboxManager.close();
         }
 
-            //return <p > Loading... < /p >;
-
         return (
             <div>
-                <button onClick={this.viewMarkersFromBase}>Wyświetl hulajnogi z bazy</button>
-                <button className={"submit_button"} onClick={this.viewMarkersFromApi}>Wyświetl hulajnogi z API</button>
+                <button onClick={this.viewMarkersFromBase}>Wyświetl lokalizacje użytkowników</button>
+                <button className={"submit_button"} onClick={this.viewMarkersFromApi}>Wyświetl lokalizacje Blinkee</button>
                 <button className={"submit_button"} onClick={this.eraseMap}>Wyczyść mapę</button>
                 {this.state.markers.map((position, idx) =>
-                    <Marker key={idx} position={position}>
+                    <Marker key={idx} position={position} icon={position[2]}>
                         <Popup>
+                            {
+                                position[2] === blueIcon ? <h3>Lokalizacja Blinkee</h3> : <h3>Lokalizacja użytkownika</h3>
+                            }
                             {position[0]}, {position[1]}
                         </Popup>
                     </Marker>

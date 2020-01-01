@@ -10,6 +10,15 @@ import {MarkersView} from "./markers";
 const aeiLat = 50.28868461815858;
 const aeiLng = 18.67756247520447;
 
+const userIcon = new L.Icon({
+    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -106,12 +115,11 @@ class App extends React.Component {
                     <Login onLogged={this.onLogged}/>
                 </Control>
 
-                <Marker position={position} opacity='0.5'>
+                <Marker position={position} icon={userIcon}>
                     <Popup>
-                        Twoja wybrana lokazliacja
+                        <h3>Twoja wybrana lokalizacja</h3>
                     </Popup>
                 </Marker>
-
             </Map>
         )
     }
