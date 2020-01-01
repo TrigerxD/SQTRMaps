@@ -6,6 +6,7 @@ import R from 'react-dom'
 import {Login} from "./Login";
 import {Captcha} from "./Captcha";
 import {MarkersView} from "./markers";
+import {PopupboxManager} from "react-popupbox";
 
 const aeiLat = 50.28868461815858;
 const aeiLng = 18.67756247520447;
@@ -34,6 +35,7 @@ class App extends React.Component {
         this.getMyLocation = this.getMyLocation.bind(this);
         this.newMarkerPosition = this.newMarkerPosition.bind(this);
         this.sendLocalization = this.sendLocalization.bind(this);
+        this.showPrettyInfo = this.showPrettyInfo.bind(this);
     }
 
     componentDidMount() {
@@ -74,8 +76,38 @@ class App extends React.Component {
 
     }
 
+    showPrettyInfo(msg) {
+        const content = <h1>{msg}</h1>;
+        const sleep = (milliseconds) => {
+            return new Promise(resolve => setTimeout(resolve, milliseconds))
+        };
+        PopupboxManager.open({
+            content,
+            config: {
+                titleBar: {
+                    enable: false,
+                },
+                overlayClose: false,
+                fadeIn: true,
+                fadeInSpeed: 200
+            }
+        });
+        sleep(1000).then(() => {
+            PopupboxManager.close({
+                config: {
+                    fadeOut: true,
+                    fadeOutSpeed: 200
+                }
+            });
+        });
+    }
+
     onLogged = (access_token, refresh_token) => {
         this.setState({access_token: access_token, refresh_token: refresh_token});
+        if(access_token === '')
+            this.showPrettyInfo('Wylogowano')
+        else
+            this.showPrettyInfo('Zalogowano')
     };
 
     render() {
