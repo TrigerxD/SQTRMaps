@@ -6,9 +6,19 @@ import R from 'react-dom'
 import {Login} from "./Login";
 import {Captcha} from "./Captcha";
 import {MarkersView} from "./markers";
+import {PopupboxManager} from "react-popupbox";
 
 const aeiLat = 50.28868461815858;
 const aeiLng = 18.67756247520447;
+
+const userIcon = new L.Icon({
+    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
 
 class App extends React.Component {
     constructor(props) {
@@ -25,6 +35,7 @@ class App extends React.Component {
         this.getMyLocation = this.getMyLocation.bind(this);
         this.newMarkerPosition = this.newMarkerPosition.bind(this);
         this.sendLocalization = this.sendLocalization.bind(this);
+        this.showPrettyInfo = this.showPrettyInfo.bind(this);
     }
 
     componentDidMount() {
@@ -65,8 +76,38 @@ class App extends React.Component {
 
     }
 
+    showPrettyInfo(msg) {
+        const content = <h1>{msg}</h1>;
+        const sleep = (milliseconds) => {
+            return new Promise(resolve => setTimeout(resolve, milliseconds))
+        };
+        PopupboxManager.open({
+            content,
+            config: {
+                titleBar: {
+                    enable: false,
+                },
+                overlayClose: false,
+                fadeIn: true,
+                fadeInSpeed: 200
+            }
+        });
+        sleep(1000).then(() => {
+            PopupboxManager.close({
+                config: {
+                    fadeOut: true,
+                    fadeOutSpeed: 200
+                }
+            });
+        });
+    }
+
     onLogged = (access_token, refresh_token) => {
         this.setState({access_token: access_token, refresh_token: refresh_token});
+        if(access_token === '')
+            this.showPrettyInfo('Wylogowano')
+        else
+            this.showPrettyInfo('Zalogowano')
     };
 
     render() {
@@ -106,12 +147,11 @@ class App extends React.Component {
                     <Login onLogged={this.onLogged}/>
                 </Control>
 
-                <Marker position={position} opacity='0.5'>
+                <Marker position={position} icon={userIcon}>
                     <Popup>
-                        hulajnoga
+                        <h3>Twoja wybrana lokalizacja</h3>
                     </Popup>
                 </Marker>
-
             </Map>
         )
     }
